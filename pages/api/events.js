@@ -1,6 +1,6 @@
 import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
-import * as OpenAI from 'openai';
+import OpenAI from 'openai';
 import nc from 'next-connect';
 
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
@@ -34,15 +34,14 @@ function extractUrls(message) {
 async function generateSummary(url) {
     try {
         const prompt = `Please summarize the following article: ${url}`;
-        const openaiInstance = new OpenAI.OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-        const response = await openaiInstance.Completion.create({
+        const response = await OpenAI.Completion.create({
             engine: 'davinci-codex',
             prompt,
             max_tokens: 100,
             n: 1,
             stop: null,
             temperature: 0.5,
-        });
+        }, { apiKey: process.env.OPENAI_API_KEY });
 
         return response.choices[0].text.trim();
     } catch (error) {
