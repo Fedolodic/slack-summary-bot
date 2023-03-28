@@ -32,9 +32,16 @@ slackEvents.on('app_mention', async (event) => {
     }
 });
 
-function extractUrls(message) {
-    const urlRegex = /https?:\/\/[^\s]+/g;
-    return message.match(urlRegex) || [];
+function extractUrls(text) {
+    const urlRegex = /<((?:https?|ftp):\/\/[^\s/$.?#].[^\s>]*)>/g;
+    const urls = [];
+    let match;
+
+    while ((match = urlRegex.exec(text)) !== null) {
+        urls.push(match[1]);
+    }
+
+    return urls;
 }
 
 async function generateSummary(url) {
