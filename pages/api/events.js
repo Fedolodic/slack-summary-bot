@@ -52,6 +52,8 @@ async function generateSummary(url) {
 }
 
 export default async (req, res) => {
+    const rawBody = await parseRawBody(req);
+    req.body = JSON.parse(rawBody);
     console.log('Request body:', req.body);
 
     if (req.body.type === 'url_verification') {
@@ -65,3 +67,24 @@ export default async (req, res) => {
         }
     }
 };
+
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
+
+const parseRawBody = (req) =>
+    new Promise((resolve, reject) => {
+        let data = '';
+        req.on('data', (chunk) => {
+            data += chunk;
+        });
+        req.on('end', () => {
+            resolve(data);
+        });
+        req.on('error', (error) => {
+            reject(error);
+        });
+    }
+);
