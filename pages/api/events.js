@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 import nc from 'next-connect';
 import axios from 'axios';
 
-OpenAI.apiKey = process.env.OPENAI_API_KEY;
+const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 const slackClient = new WebClient(process.env.SLACK_BOT_TOKEN);
@@ -35,7 +35,7 @@ function extractUrls(message) {
 async function generateSummary(url) {
     try {
         const prompt = `Please summarize the following article: ${url}`;
-        const response = await axios.post('https://api.openai.com/v1/completions', {
+        const response = await openai.Completion.create({
             model: 'text-davinci-003',
             prompt,
             max_tokens: 100,
