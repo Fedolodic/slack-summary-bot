@@ -1,6 +1,7 @@
 import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
 import * as OpenAI from 'openai';
+import nc from 'next-connect';
 
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
 
@@ -51,22 +52,25 @@ async function generateSummary(url) {
     }
 }
 
-export default async (req, res) => {
-    const rawBody = await parseRawBody(req);
-    req.body = JSON.parse(rawBody);
+const handler = nc()
+  .use(rawBody)
+  .post(async (req, res) => {
+    req.body = JSON.parse(req.rawBody);
     console.log('Request body:', req.body);
 
     if (req.body.type === 'url_verification') {
-        res.status(200).send(req.body.challenge);
+      res.status(200).send(req.body.challenge);
     } else {
-        try {
-            const body = await slackEvents.requestListener()(req, res);
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error processing event');
-        }
+      try {
+        const body = await slackEvents.requestListener()(req, res);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Error processing event');
+      }
     }
-};
+  });
+
+export default handler;
 
 export const config = {
     api: {
@@ -74,17 +78,13 @@ export const config = {
     },
 };
 
-const parseRawBody = (req) =>
-    new Promise((resolve, reject) => {
-        let data = '';
-        req.on('data', (chunk) => {
-            data += chunk;
-        });
-        req.on('end', () => {
-            resolve(data);
-        });
-        req.on('error', (error) => {
-            reject(error);
-        });
-    }
-);
+function rawBody(req, res, next) {
+    req.setEncoding('utf8');
+    req.rawBody = '';
+    req.on('data', (chunk) => {
+        req.rawBody += chunk;
+    });
+    req.on('end', () => {
+        next();
+    });
+}
