@@ -1,6 +1,6 @@
 import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
-import * as OpenAI from 'openai';
+const OpenAI = require('openai');
 import nc from 'next-connect';
 import axios from 'axios';
 
