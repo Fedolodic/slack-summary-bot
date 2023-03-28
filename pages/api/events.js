@@ -14,13 +14,18 @@ slackEvents.on('app_mention', async (event) => {
         const message = event.text;
         const urls = extractUrls(message);
 
+        console.log('URLs extracted:', urls);
+
         for (const url of urls) {
             const summary = await generateSummary(url);
-            await slackClient.chat.postMessage({
+            console.log('Generated summary:', summary);
+            const postMessageResult = await slackClient.chat.postMessage({
                 channel: event.channel,
                 text: `Summary for ${url}:\n${summary}`,
                 thread_ts: event.ts,
             });
+
+            console.log('Post message result:', postMessageResult);
         }
     } catch (error) {
         console.error(error);
