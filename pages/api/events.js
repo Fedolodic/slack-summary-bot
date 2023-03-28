@@ -64,6 +64,4 @@ export default async (req, res) => {
             res.status(500).send('Error processing event');
         }
     }
-
-    res.status(200).json({ message: 'Hello from /api/events' });
 };
