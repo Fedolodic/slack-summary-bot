@@ -1,10 +1,10 @@
 import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
-const OpenAI = require('openai');
+import OpenAI from 'openai';
 import nc from 'next-connect';
 import axios from 'axios';
 
-const openai = new OpenAI(process.env.OPENAI_API_KEY);
+OpenAI.apiKey = process.env.OPENAI_API_KEY;
 
 const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 const slackClient = new WebClient(process.env.SLACK_BOT_TOKEN);
