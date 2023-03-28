@@ -1,6 +1,6 @@
 import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
-import OpenAI from 'openai';
+import * as OpenAI from 'openai';
 import nc from 'next-connect';
 
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
@@ -34,7 +34,8 @@ function extractUrls(message) {
 async function generateSummary(url) {
     try {
         const prompt = `Please summarize the following article: ${url}`;
-        const response = await OpenAI.Completion.create({
+        const openaiInstance = new OpenAI.OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        const response = await openaiInstance.Completion.create({
             engine: 'davinci-codex',
             prompt,
             max_tokens: 100,
@@ -51,22 +52,22 @@ async function generateSummary(url) {
 }
 
 const handler = nc()
-  .use(rawBody)
-  .post(async (req, res) => {
-    req.body = JSON.parse(req.rawBody);
-    console.log('Request body:', req.body);
+    .use(rawBody)
+    .post(async (req, res) => {
+        req.body = JSON.parse(req.rawBody);
+        console.log('Request body:', req.body);
 
-    if (req.body.type === 'url_verification') {
-      res.status(200).send(req.body.challenge);
-    } else {
-      try {
-        const body = await slackEvents.requestListener()(req, res);
-      } catch (error) {
-        console.error(error);
-        res.status(500).send('Error processing event');
-      }
-    }
-  });
+        if (req.body.type === 'url_verification') {
+            res.status(200).send(req.body.challenge);
+        } else {
+            try {
+                const body = await slackEvents.requestListener()(req, res);
+            } catch (error) {
+                console.error(error);
+                res.status(500).send('Error processing event');
+            }
+        }
+    });
 
 export default handler;
 
