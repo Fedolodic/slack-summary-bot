@@ -1,6 +1,6 @@
 import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
-import OpenAI from 'openai';
+import * as OpenAI from 'openai';
 
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
 
