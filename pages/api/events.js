@@ -2,6 +2,7 @@ import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
 import OpenAI from 'openai';
 import nc from 'next-connect';
+import axios from 'axios';
 
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
 
@@ -34,16 +35,21 @@ function extractUrls(message) {
 async function generateSummary(url) {
     try {
         const prompt = `Please summarize the following article: ${url}`;
-        const response = await OpenAI.Completion.create({
+        const response = await axios.post('https://api.openai.com/v1/completions', {
             model: 'text-davinci-003',
             prompt,
             max_tokens: 100,
             n: 1,
             stop: null,
             temperature: 0.5,
-        }, { apiKey: process.env.OPENAI_API_KEY });
+        }, {
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+        });
 
-        return response.choices[0].text.trim();
+        return response.data.choices[0].text.trim();
     } catch (error) {
         console.error(error);
         return 'Error generating summary.';
