@@ -10,6 +10,7 @@ const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 const slackClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 slackEvents.on('app_mention', async (event) => {
+    console.log("Bot mentioned:", event); // Added console log
     try {
         const message = event.text;
         const urls = extractUrls(message);
@@ -25,7 +26,7 @@ slackEvents.on('app_mention', async (event) => {
                 thread_ts: event.ts,
             });
 
-            console.log('Post message result:', postMessageResult);
+            console.log('Summary posted to Slack'); // Added console log
         }
     } catch (error) {
         console.error(error);
