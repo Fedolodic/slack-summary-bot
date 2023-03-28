@@ -67,9 +67,3 @@ export default async (req, res) => {
 
     res.status(200).json({ message: 'Hello from /api/events' });
 };
-
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
