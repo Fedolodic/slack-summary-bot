@@ -35,7 +35,7 @@ async function generateSummary(url) {
     try {
         const prompt = `Please summarize the following article: ${url}`;
         const response = await OpenAI.Completion.create({
-            engine: 'davinci-codex',
+            model: 'text-davinci-003',
             prompt,
             max_tokens: 100,
             n: 1,
