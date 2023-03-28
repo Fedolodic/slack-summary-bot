@@ -4,6 +4,8 @@ import * as OpenAI from 'openai';
 
 OpenAI.apiKey = process.env.OPENAI_API_KEY;
 
+console.log('SLACK_SIGNING_SECRET:', process.env.SLACK_SIGNING_SECRET);
+
 const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 const slackClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
